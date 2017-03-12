@@ -2,7 +2,7 @@
 
 The cover generator is a plugin for Unreal Engine 4. 
 
-![Example Covers](https://cloud.githubusercontent.com/assets/6062062/23833297/aba36c16-0743-11e7-9080-d3d6c121086f.gif)
+![Example Covers](https://cloud.githubusercontent.com/assets/6062062/23833642/d3113832-0748-11e7-96b2-104c767ba6c4.gif)
 
 It analyzes the geometry of a level to find possible cover points. Cover points can then be parsed via the native **Environment Query System (EQS)** to allow AI controlled characters to find spots to hide during a fight or to prepare an ambush.
 
