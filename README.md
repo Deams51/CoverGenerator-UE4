@@ -2,6 +2,8 @@
 
 The cover generator is a plugin for Unreal Engine 4. 
 
+![Example Covers](https://cloud.githubusercontent.com/assets/6062062/23833297/aba36c16-0743-11e7-9080-d3d6c121086f.gif)
+
 It analyzes the geometry of a level to find possible cover points. Cover points can then be parsed via the native **Environment Query System (EQS)** to allow AI controlled characters to find spots to hide during a fight or to prepare an ambush.
 
 The system offers different set of information per generated cover such as if it is a crouched or standing cover, if the character can stand to shoot or lean on the side.
@@ -37,12 +39,22 @@ alt="Dynamic tactical cover generation coupled with a GOAP AI " width="240" heig
 ![Simulating level](https://cloud.githubusercontent.com/assets/6062062/23833001/c020b030-073f-11e7-832a-a8a5a8696790.jpg
 )
 
+- To be able to use the generated covers in your AI logic, first enable the Environment Query System: [UE4 quick start guide](https://docs.unrealengine.com/latest/INT/Engine/AI/EnvironmentQuerySystem/QuickStart/2/)
 
-## How to enable the Environment Query System?
+- Create a new EQS query
 
-See UE4 quick start guide: [https://docs.unrealengine.com/latest/INT/Engine/AI/EnvironmentQuerySystem/QuickStart/2/](https://docs.unrealengine.com/latest/INT/Engine/AI/EnvironmentQuerySystem/QuickStart/2/)
+![Create a new EQS Query](https://cloud.githubusercontent.com/assets/6062062/23833001/c020b030-073f-11e7-832a-a8a5a8696790.jpg
+)
 
+- Select "Cover FMemory" as a source of points
 
+![Cover FMemory](https://cloud.githubusercontent.com/assets/6062062/23833195/8ca307a0-0742-11e7-9fe7-433e4e9016f9.jpg
+)
+
+- You can use an EQS Testing pawn to visualize the result
+
+![EQS testing pawn](https://cloud.githubusercontent.com/assets/6062062/23833170/3fce8e72-0742-11e7-8caf-d213aebed291.gif
+)
 
 
 
