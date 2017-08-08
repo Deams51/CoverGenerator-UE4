@@ -9,7 +9,7 @@
  * 
  */
 UCLASS(BlueprintType, Blueprintable)
-class UCoverPoint : public UObject
+class COVERGENERATOR_API UCoverPoint : public UObject
 {
 	GENERATED_BODY()	
 	

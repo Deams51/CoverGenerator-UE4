@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class CoverGenerator : ModuleRules
 {
-	public CoverGenerator(TargetInfo Target)
+	public CoverGenerator(ReadOnlyTargetRules Target):base(Target)
 	{
 		
 		PublicIncludePaths.AddRange(

@@ -56,7 +56,7 @@ struct FCoverPointOctreeSemantics
 typedef TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics> FCoverPointOctree;
 
 UCLASS()
-class ACoverGenerator : public AActor
+class COVERGENERATOR_API ACoverGenerator : public AActor
 {
 	GENERATED_UCLASS_BODY()
 

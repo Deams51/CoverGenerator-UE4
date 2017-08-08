@@ -4,7 +4,7 @@
 
 #include "ModuleManager.h"
 
-class FCoverGeneratorModule : public IModuleInterface
+class COVERGENERATOR_API FCoverGeneratorModule : public IModuleInterface
 {
 public:
 
