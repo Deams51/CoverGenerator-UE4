@@ -33,7 +33,7 @@ alt="Dynamic tactical cover generation coupled with a GOAP AI " width="240" heig
 ![Display generated cover points](https://cloud.githubusercontent.com/assets/6062062/23832977/5e7e1d54-073f-11e7-848d-9fad46882bfa.jpg
 )
 
-- You can see the result on the image below. Blue spheres represent cover points, the lowest ones for crouched covers, the highest ones for standing covers. Arrows are representing from where the character can shoot.
+- Press the "simulate" button. You can see the result on the image below. Blue spheres represent cover points, the lowest ones for crouched covers, the highest ones for standing covers. Arrows are representing from where the character can see or shoot.
 
 
 ![Simulating level](https://cloud.githubusercontent.com/assets/6062062/23833001/c020b030-073f-11e7-832a-a8a5a8696790.jpg
