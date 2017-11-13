@@ -19,6 +19,9 @@ ACoverGenerator::ACoverGenerator(const FObjectInitializer& ObjectInitializer) : 
 	// Octree
 	CoverPointOctree = new FCoverPointOctree(FVector(0, 0, 0), 64000);
 
+	// Async
+	bIsRefreshed = false;
+	bIsRefreshing = false;
 }
 
 // Called when the game starts or when spawned
@@ -28,8 +31,16 @@ void ACoverGenerator::BeginPlay()
 
 	if (bRegenerateAtBeginPlay && ACoverGenerator::GetCoverGenerator(GetWorld()) == this)
 	{
-		// Generate cover points	
-		GenerateCovers(true);
+		//// sync
+		//GenerateCovers(true, false);
+		// OR:
+		// start task async
+		if (!bIsRefreshing)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("ACoverGenerator : GenerateCovers() ASYNC")));
+
+			GenerateCovers(true, true);
+		}
 	}
 	else if(AllCoverPoints.Num() > 0)
 	{
@@ -50,6 +61,20 @@ void ACoverGenerator::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	
+	// debug info
+	if (bIsRefreshed)
+	{
+		bIsRefreshed = false;
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("ACoverGenerator : GenerateCovers() finished ASYNC")));
+
+		if (DebugDisplayLog)
+		{
+			UE_LOG(LogTemp, Log, TEXT("%s: Finished generating cover points."), *GetNameSafe(this));
+			CoverPointOctree->DumpStats();
+		}
+	}
+
 #if WITH_EDITOR
 	// Display Debug information
 
@@ -138,7 +163,16 @@ void ACoverGenerator::OnNavigationGenerationFinished(class ANavigationData* NavD
 {
 	if (bRegenerateAtNavigationRebuilt)
 	{
-		GenerateCovers(true);
+		//// sync
+		//GenerateCovers(true, false);
+		// OR:
+		// start task async
+		if (!bIsRefreshing)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("ACoverGenerator : GenerateCovers() ASYNC")));
+			
+			GenerateCovers(true, true);
+		}
 	}
 }
 
@@ -408,7 +442,7 @@ FVector ACoverGenerator::Get2DPerpVector(const FVector& v1) const
 	return FVector(v1.Y, -v1.X, 0);
 }
 
-void ACoverGenerator::GenerateCovers(bool ForceRegeneration /*= false*/)
+void ACoverGenerator::GenerateCovers(bool ForceRegeneration, bool DoAsync)
 {
 	if (HasGeneratedCovers && !ForceRegeneration)
 	{
@@ -429,6 +463,9 @@ void ACoverGenerator::GenerateCovers(bool ForceRegeneration /*= false*/)
 	delete CoverPointOctree; 
 	CoverPointOctree = new FCoverPointOctree(FVector(0, 0, 0), 64000);
 
+	// reset
+	HasGeneratedCovers = false;
+
 	// Get Navigation Mesh Data 
 	ARecastNavMesh* NavMeshData = GetNavMeshData(World);
 	if (NavMeshData == nullptr)
@@ -442,6 +479,27 @@ void ACoverGenerator::GenerateCovers(bool ForceRegeneration /*= false*/)
 	NavMeshData->BeginBatchQuery();
 	NavMeshData->GetDebugGeometry(NavMeshGeometry);
 
+	// Async processing
+	if (DoAsync)
+	{
+		(new FAutoDeleteAsyncTask<FGenerateCoversAsyncTask>(this, NavMeshGeometry))->StartBackgroundTask();
+
+		return;
+	}
+	else // use game thread
+	{
+		AnalizeMeshData(NavMeshGeometry);
+	}
+
+	if (DebugDisplayLog)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s: Finished generating cover points."), *GetNameSafe(this));
+		CoverPointOctree->DumpStats(); 
+	}
+}
+
+void ACoverGenerator::AnalizeMeshData(FRecastDebugGeometry& NavMeshGeometry)
+{
 	// Navigation mesh data analysis
 	const TArray<FVector>& NavMeshEdgeVerts = NavMeshGeometry.NavMeshEdges;
 	for (int32 Idx = 0; Idx < NavMeshEdgeVerts.Num(); Idx += 2)
@@ -450,17 +508,17 @@ void ACoverGenerator::GenerateCovers(bool ForceRegeneration /*= false*/)
 		const FNavLocation SegmentEnd = FNavLocation(NavMeshEdgeVerts[Idx + 1]);
 
 		const FVector Segment = SegmentEnd.Location - SegmentStart.Location;
-		const float SegmentSize = Segment.Size(); 
+		const float SegmentSize = Segment.Size();
 		FVector Perp = Get2DPerpVector(Segment);
 		FVector SegmentDirection = Segment;
 		SegmentDirection.Normalize();
 
 		// Check start and end position 			
-		TestAndAddPoint(SegmentStart.Location, SegmentDirection, World, Perp);
-		TestAndAddPoint(SegmentEnd.Location, SegmentDirection, World, Perp);
+		TestAndAddPoint(SegmentStart.Location, SegmentDirection, GetWorld(), Perp);
+		TestAndAddPoint(SegmentEnd.Location, SegmentDirection, GetWorld(), Perp);
 
 #if WITH_EDITOR
-		bool bDebugDraw = false; 
+		bool bDebugDraw = false;
 		if (bDraw1AllSegmentPointsTested && FVector::Dist(GetActorLocation(), SegmentStart.Location) < DebugDistance)
 		{
 			bDebugDraw = true;
@@ -476,7 +534,7 @@ void ACoverGenerator::GenerateCovers(bool ForceRegeneration /*= false*/)
 			for (int32 idx = 1; idx < NumSegmentPieces; idx++)
 			{
 				const FVector SegmentPoint = SegmentStart.Location + (idx * SegmentLength * SegmentDirection);
-				TestAndAddPoint(SegmentPoint, SegmentDirection, World, Perp);
+				TestAndAddPoint(SegmentPoint, SegmentDirection, GetWorld(), Perp);
 
 #if WITH_EDITOR
 				if (bDebugDraw)
@@ -490,13 +548,7 @@ void ACoverGenerator::GenerateCovers(bool ForceRegeneration /*= false*/)
 
 	HasGeneratedCovers = true;
 
-	CoverPointOctree->ShrinkElements(); 
-
-	if (DebugDisplayLog)
-	{
-		UE_LOG(LogTemp, Log, TEXT("%s: Finished generating cover points."), *GetNameSafe(this));
-		CoverPointOctree->DumpStats(); 
-	}
+	CoverPointOctree->ShrinkElements();
 }
 
 bool ACoverGenerator::OccupyCover(UCoverPoint* CoverPoint, class AController* Controller)
@@ -588,7 +640,8 @@ void ACoverGenerator::PostEditChangeProperty(struct FPropertyChangedEvent& Prope
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(ACoverGenerator, ForceRefresh))
 	{
 		ForceRefresh = false; 
-		GenerateCovers(true); 
+		// in editor not async
+		GenerateCovers(true, false); 
 	}
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
