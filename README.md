@@ -1,6 +1,6 @@
 # Message from fork owner:
 
-I'm doing some changes for this plugin, such as minor fixes and optimizations, more EQS tests, maybe something else. If 
+I'm doing some changes for this plugin, such as minor fixes and optimizations, more EQS tests, maybe something else. 
 
 # Cover Generator
 
