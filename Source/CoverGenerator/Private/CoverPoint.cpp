@@ -1,6 +1,5 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
 #include "CoverPoint.h"
 
 

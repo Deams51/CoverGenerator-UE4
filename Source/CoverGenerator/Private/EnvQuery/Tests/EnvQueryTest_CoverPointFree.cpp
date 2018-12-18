@@ -1,10 +1,9 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
+#include "EnvQueryTest_CoverPointFree.h"
 #include "CoverPoint.h"
 #include "EnvQueryItemType_Cover.h"
 #include "CoverGenerator.h"
-#include "EnvQueryTest_CoverPointFree.h"
 
 
 

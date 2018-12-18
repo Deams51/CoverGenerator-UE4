@@ -1,11 +1,10 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
+#include "EnvQueryTest_IsCoverPosition.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
 
 #include "EnvQueryItemType_Cover.h"
-#include "EnvQueryTest_IsCoverPosition.h"
 
 
 UEnvQueryTest_IsCoverPosition::UEnvQueryTest_IsCoverPosition(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

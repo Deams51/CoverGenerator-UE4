@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
 #include "ModuleManager.h"
 
 class COVERGENERATOR_API FCoverGeneratorModule : public IModuleInterface

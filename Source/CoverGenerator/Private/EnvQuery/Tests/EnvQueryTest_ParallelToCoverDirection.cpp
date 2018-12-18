@@ -1,10 +1,9 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
+#include "EnvQueryTest_ParallelToCoverDirection.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
 #include "EnvQueryTest_IsCoverPosition.h"
-#include "EnvQueryTest_ParallelToCoverDirection.h"
 #include "EnvQueryItemType_Cover.h"
 
 

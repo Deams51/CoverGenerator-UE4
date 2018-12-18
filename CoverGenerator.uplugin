@@ -1,24 +1,24 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "Cover Generator",
-	"Description": "",
-	"Category": "Other",
-	"CreatedBy": "",
-	"CreatedByURL": "",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"EnabledByDefault": false,
-	"CanContainContent": false,
-	"IsBetaVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "CoverGenerator",
-			"Type": "Developer",
-			"LoadingPhase": "Default"
-		}
-	]
+    "FileVersion": 3,
+    "Version": 1,
+    "VersionName": "1.1",
+    "FriendlyName": "Cover Generator",
+    "Description": "Dynamic Tactical Cover Generator",
+    "Category": "Other",
+    "CreatedBy": "Deams",
+    "CreatedByURL": "https://github.com/Deams51/CoverGenerator-UE4",
+    "DocsURL": "",
+    "MarketplaceURL": "",
+    "SupportURL": "",
+    "EnabledByDefault": false,
+    "CanContainContent": false,
+    "IsBetaVersion": false,
+    "Installed": false,
+    "Modules": [
+        {
+            "Name": "CoverGenerator",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
+    ]
 }

@@ -6,9 +6,9 @@
 #include "Runtime/Engine/Public/GenericOctree.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
-#include "AI/Navigation/NavigationSystem.h"
+#include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 #include "AI/Navigation/NavAgentInterface.h"
-#include "AI/Navigation/RecastNavMesh.h"
+#include "Navmesh/RecastNavMesh.h"
 #include "CoverPoint.h" 
 #include "CoverGenerator.generated.h"
 

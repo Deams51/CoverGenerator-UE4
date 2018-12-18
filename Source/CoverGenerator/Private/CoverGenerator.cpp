@@ -1,9 +1,10 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
-#include "EnvQuery/EnvQueryItemType_Cover.h"
-#include "Runtime/Engine/Classes/AI/Navigation/NavigationSystem.h"
 #include "CoverGenerator.h"
+#include "EnvQuery/EnvQueryItemType_Cover.h"
+#include "EngineUtils.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "DrawDebugHelpers.h"
 
 
 // Sets default values
@@ -41,7 +42,7 @@ void ACoverGenerator::BeginPlay()
 	}
 
 	// Bind to navigation generation in case we want to rebuild covers
-	if (UNavigationSystem* NavSystem = UNavigationSystem::GetCurrent(GetWorld()))
+	if (UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld()))
 		NavSystem->OnNavigationGenerationFinishedDelegate.AddDynamic(this, &ACoverGenerator::OnNavigationGenerationFinished);
 }
 
@@ -126,7 +127,7 @@ void ACoverGenerator::Tick( float DeltaTime )
 void ACoverGenerator::BeginDestroy()
 {
 	// Unbind navigation delegate	
-	if (UNavigationSystem* NavSystem = UNavigationSystem::GetCurrent(GetWorld()))
+	if (UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld()))
 		NavSystem->OnNavigationGenerationFinishedDelegate.RemoveDynamic(this, &ACoverGenerator::OnNavigationGenerationFinished);
 
 	delete CoverPointOctree;
@@ -152,7 +153,7 @@ void ACoverGenerator::DrawDebugCover(UWorld* World, const FVector& StartLocation
 
 ARecastNavMesh* ACoverGenerator::GetNavMeshData(UWorld* World)
 {
-	const UNavigationSystem* NavSys = World->GetNavigationSystem();
+	const UNavigationSystemBase* NavSys = World->GetNavigationSystem();
 
 	if (NavSys == nullptr)
 	{

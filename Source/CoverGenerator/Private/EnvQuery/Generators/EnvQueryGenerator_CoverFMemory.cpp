@@ -1,10 +1,9 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
+#include "EnvQueryGenerator_CoverFMemory.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "CoverGenerator.h"
 #include "EnvQueryItemType_Cover.h"
-#include "EnvQueryGenerator_CoverFMemory.h"
 
 
 #define LOCTEXT_NAMESPACE "EnvQueryGenerator_CoverFMemory"

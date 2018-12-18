@@ -1,11 +1,11 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
 #include "EnvQueryTest_TraceDistance.h"
-#include "CoverGeneratorPrivatePCH.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
 #include "EnvQueryTest_IsCoverPosition.h"
+#include "WorldCollision.h"
+#include "Engine/World.h"
 
 
 UEnvQueryTest_TraceDistance::UEnvQueryTest_TraceDistance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

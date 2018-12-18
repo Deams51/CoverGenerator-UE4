@@ -1,9 +1,8 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
+#include "EnvQueryItemType_Cover.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
-#include "EnvQueryItemType_Cover.h"
 
 UEnvQueryItemType_Cover::UEnvQueryItemType_Cover(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

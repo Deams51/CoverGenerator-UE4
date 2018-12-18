@@ -5,6 +5,8 @@
 #include "Object.h"
 #include "CoverPoint.generated.h"
 
+class AController;
+
 /**
  * 
  */
@@ -29,23 +31,23 @@ public:
 
 	/** Is it a Left cover (can lean on left) */
 	UPROPERTY(BlueprintReadWrite, Category = "Cover")
-		bool bLeftCoverStanding;
+	bool bLeftCoverStanding;
 
 	/** Is it a Right cover (can lean on Right) */
 	UPROPERTY(BlueprintReadWrite, Category = "Cover")
-		bool bRightCoverStanding;
+	bool bRightCoverStanding;
 
 	/** Is it a Left cover (can lean on left) */
 	UPROPERTY(BlueprintReadWrite, Category = "Cover")
-		bool bLeftCoverCrouched;
+	bool bLeftCoverCrouched;
 
 	/** Is it a Right cover (can lean on Right) */
 	UPROPERTY(BlueprintReadWrite, Category = "Cover")
-		bool bRightCoverCrouched;
+	bool bRightCoverCrouched;
 
 	/** Is it a Right cover (can lean on Right) */
 	UPROPERTY(BlueprintReadWrite, Category = "Cover")
-		bool bFrontCoverCrouched;
+	bool bFrontCoverCrouched;
 
 	/** Is it a cover requiring crouch */
 	UPROPERTY(BlueprintReadWrite, Category = "Cover")
@@ -66,8 +68,6 @@ public:
 
 	UCoverPoint(const FVector& InLocation, const FVector& InDirectionToWall);
 	
-	//UCoverPoint(const UCoverPoint& InCopy);
-
 public:
 	FVector DirectionToWall() const { return _DirectionToWall; }
 	void DirectionToWall(FVector val) { 

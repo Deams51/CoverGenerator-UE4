@@ -1,6 +1,6 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "CoverGeneratorPrivatePCH.h"
+#include "CoverGeneratorModule.h"
 
 #define LOCTEXT_NAMESPACE "FCoverGeneratorModule"
 
