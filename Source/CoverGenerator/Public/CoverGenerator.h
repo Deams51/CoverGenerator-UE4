@@ -10,7 +10,10 @@
 #include "AI/Navigation/NavAgentInterface.h"
 #include "Navmesh/RecastNavMesh.h"
 #include "CoverPoint.h" 
+#include "GenerateCoversAsync.h"
+
 #include "CoverGenerator.generated.h"
+
 
 struct FCoverPointOctreeElement
 {
@@ -224,7 +227,10 @@ public:
 
 	FVector Get2DPerpVector(const FVector& v1) const;
 
-	void GenerateCovers(bool ForceRegeneration = false);
+	void GenerateCovers(bool ForceRegeneration = false, bool DoAsync = false);
+
+	// can be called async
+	void AnalizeMeshData(FRecastDebugGeometry& NavMeshGeometry);
 
 	bool MeOcuppying(UCoverPoint* CoverPoint, AController* Controller);
 
@@ -234,10 +240,14 @@ public:
 	TArray<UCoverPoint*> GetCoverWithinBounds(const FBoxCenterAndExtent& BoundsIn);
 	bool CoverExistWithinBounds(const FBoxCenterAndExtent& BoundsIn);
 
-
-
 private:
 
 	UFUNCTION()
 	void OnNavigationGenerationFinished(class ANavigationData* NavData);
+
+	// required by async task:
+public:
+
+	bool bIsRefreshing;
+	bool bIsRefreshed;
 };
