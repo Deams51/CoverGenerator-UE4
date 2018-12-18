@@ -1,6 +1,5 @@
 // Copyright (2017) Ivan Stummer - All rights reserved.
 
-#include "CoverGeneratorPrivatePCH.h"
 #include "GenerateCoversAsync.h"
 #include "CoverGenerator.h"
 

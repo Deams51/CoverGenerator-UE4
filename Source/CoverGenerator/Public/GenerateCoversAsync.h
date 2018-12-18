@@ -3,9 +3,9 @@
 #pragma once
 
 #include "AsyncWork.h"
-#include "Runtime/Engine/Classes/AI/Navigation/NavigationSystem.h"
-//#include "GenerateCoversAsyncTask.generated.h" // NO !
+#include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 
+class ACoverGenerator;
 
 class FGenerateCoversAsyncTask : public FNonAbandonableTask
 {
@@ -13,20 +13,15 @@ public:
 
 	friend class FAutoDeleteAsyncTask<FGenerateCoversAsyncTask>;
 
-	// data
-	class ACoverGenerator* CoverGenerator;
+	ACoverGenerator* CoverGenerator;
 	FRecastDebugGeometry NavMeshGeometry;
 
-	//---
-
-	// constructor
-	FGenerateCoversAsyncTask(ACoverGenerator* TheCoverGenerator, FRecastDebugGeometry& TheNavMeshGeometry)
+	FGenerateCoversAsyncTask(ACoverGenerator* CoverGenerator, FRecastDebugGeometry& NavMeshGeometry)
 	{
-		CoverGenerator = TheCoverGenerator;
-		NavMeshGeometry = TheNavMeshGeometry;
+		this->CoverGenerator = CoverGenerator;
+		this->NavMeshGeometry = NavMeshGeometry;
 	}
 
-	// destructor
 	~FGenerateCoversAsyncTask()
 	{
 		CoverGenerator = nullptr;

@@ -32,14 +32,8 @@ void ACoverGenerator::BeginPlay()
 
 	if (bRegenerateAtBeginPlay && ACoverGenerator::GetCoverGenerator(GetWorld()) == this)
 	{
-		//// sync
-		//GenerateCovers(true, false);
-		// OR:
-		// start task async
 		if (!bIsRefreshing)
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("ACoverGenerator : GenerateCovers() ASYNC")));
-
 			GenerateCovers(true, true);
 		}
 	}
@@ -164,14 +158,8 @@ void ACoverGenerator::OnNavigationGenerationFinished(class ANavigationData* NavD
 {
 	if (bRegenerateAtNavigationRebuilt)
 	{
-		//// sync
-		//GenerateCovers(true, false);
-		// OR:
-		// start task async
 		if (!bIsRefreshing)
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("ACoverGenerator : GenerateCovers() ASYNC")));
-			
+		{			
 			GenerateCovers(true, true);
 		}
 	}
