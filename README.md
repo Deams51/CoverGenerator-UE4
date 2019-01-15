@@ -58,3 +58,7 @@ alt="Dynamic tactical cover generation coupled with a GOAP AI " width="240" heig
 
 
 
+# How to get cover points from a Blueprint?
+
+![Blueprint Example](https://user-images.githubusercontent.com/6062062/51174720-c2a2a980-18b8-11e9-9aad-05d2d7054b61.JPG)
+

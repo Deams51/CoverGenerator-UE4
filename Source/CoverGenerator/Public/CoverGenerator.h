@@ -213,9 +213,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "CoverGenerator")
 	bool IsFreeCoverPoint(const UCoverPoint* CoverPoint);
+	
+	UFUNCTION(BlueprintCallable, Category = "CoverGenerator")
+	TArray<UCoverPoint*> GetCoverWithinBox(const FBox& BoxIn);
 
 	UFUNCTION(BlueprintCallable, Category = "CoverGenerator")
-	static ACoverGenerator* GetCoverGenerator(UObject* Asking);
+	bool CoverExistWithinBox(const FBox& BoxIn);
+
+	UFUNCTION(BlueprintPure, Category = "CoverGenerator", meta = (WorldContext = "WorldContextObject"))
+	static ACoverGenerator* GetCoverGenerator(UObject* WorldContextObject);
 
 	bool IsProvidingCover(UWorld* World, const FVector SegmentPoint, const FVector SegmentDirection, const FVector TraceVec, const float StartHeight, const float EndHeight);
 	

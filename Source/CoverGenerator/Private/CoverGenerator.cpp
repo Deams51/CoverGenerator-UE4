@@ -185,11 +185,11 @@ ARecastNavMesh* ACoverGenerator::GetNavMeshData(UWorld* World)
 	return const_cast<ARecastNavMesh*>(static_cast<const ARecastNavMesh*>(NavSys->GetMainNavData()));
 }
 
-ACoverGenerator* ACoverGenerator::GetCoverGenerator(UObject* Asking)
+ACoverGenerator* ACoverGenerator::GetCoverGenerator(UObject* WorldContextObject)
 {
-	if (Asking && Asking->GetWorld())
+	if (WorldContextObject && WorldContextObject->GetWorld())
 	{
-		TActorIterator<ACoverGenerator> Itr(Asking->GetWorld());
+		TActorIterator<ACoverGenerator> Itr(WorldContextObject->GetWorld());
 		if (Itr)
 		{
 			return *Itr;
@@ -619,6 +619,17 @@ bool ACoverGenerator::CoverExistWithinBounds(const FBoxCenterAndExtent& BoundsIn
 {
 	FCoverPointOctree::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
 	return OctreeIt.HasPendingElements();
+}
+
+
+TArray<UCoverPoint*> ACoverGenerator::GetCoverWithinBox(const FBox& BoxIn)
+{
+	return GetCoverWithinBounds(FBoxCenterAndExtent(BoxIn));
+}
+
+bool ACoverGenerator::CoverExistWithinBox(const FBox& BoxIn)
+{
+	return CoverExistWithinBounds(FBoxCenterAndExtent(BoxIn));
 }
 
 #if WITH_EDITOR
