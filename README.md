@@ -8,6 +8,8 @@ It analyzes the geometry of a level to find possible cover points. Cover points 
 
 The system offers different set of information per generated cover such as if it is a crouched or standing cover, if the character can stand or lean on the sides to shoot.
 
+The plugin is a proof of concept only. It is stable but not production ready, a lot could be optimized and a good cleaning is needed.
+
 # Example video of AI using the cover generator
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=igwEAeQFwhM
 " target="_blank"><img src="http://img.youtube.com/vi/igwEAeQFwhM/0.jpg" 
