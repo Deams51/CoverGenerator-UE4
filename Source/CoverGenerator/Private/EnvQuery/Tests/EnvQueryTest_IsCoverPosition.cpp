@@ -6,6 +6,9 @@
 
 #include "EnvQueryItemType_Cover.h"
 
+#include "CollisionQueryParams.h"
+#include "Runtime/Launch/Resources/Version.h"
+
 
 UEnvQueryTest_IsCoverPosition::UEnvQueryTest_IsCoverPosition(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -35,7 +38,9 @@ void UEnvQueryTest_IsCoverPosition::RunTest(FEnvQueryInstance& QueryInstance) co
 	}
 
 	FCollisionQueryParams TraceParams(TEXT("EnvQueryTrace"), TraceData.bTraceComplex);
+#if ENGINE_MINOR_VERSION < 22
 	TraceParams.bTraceAsyncScene = true;
+#endif
 
 	TArray<AActor*> IgnoredActors;
 	if (QueryInstance.PrepareContext(Context, IgnoredActors))

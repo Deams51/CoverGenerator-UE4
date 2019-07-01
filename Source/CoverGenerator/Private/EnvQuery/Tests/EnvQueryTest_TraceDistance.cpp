@@ -6,7 +6,7 @@
 #include "EnvQueryTest_IsCoverPosition.h"
 #include "WorldCollision.h"
 #include "Engine/World.h"
-
+#include "Runtime/Launch/Resources/Version.h"
 
 UEnvQueryTest_TraceDistance::UEnvQueryTest_TraceDistance(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -36,7 +36,9 @@ void UEnvQueryTest_TraceDistance::RunTest(FEnvQueryInstance& QueryInstance) cons
 	}
 
 	FCollisionQueryParams TraceParams(TEXT("EnvQueryTrace"), TraceData.bTraceComplex);
+#if ENGINE_MINOR_VERSION < 22
 	TraceParams.bTraceAsyncScene = true;
+#endif
 
 	TArray<AActor*> IgnoredActors;
 	if (QueryInstance.PrepareContext(Context, IgnoredActors))
