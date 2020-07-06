@@ -4,6 +4,7 @@
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
 #include "EnvQueryTest_IsCoverPosition.h"
+#include "Public/CollisionQueryParams.h"
 #include "WorldCollision.h"
 #include "Engine/World.h"
 
@@ -36,7 +37,7 @@ void UEnvQueryTest_TraceDistance::RunTest(FEnvQueryInstance& QueryInstance) cons
 	}
 
 	FCollisionQueryParams TraceParams(TEXT("EnvQueryTrace"), TraceData.bTraceComplex);
-	TraceParams.bTraceAsyncScene = true;
+	TraceParams.bTraceComplex = true;
 
 	TArray<AActor*> IgnoredActors;
 	if (QueryInstance.PrepareContext(Context, IgnoredActors))
