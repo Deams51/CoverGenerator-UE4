@@ -81,9 +81,7 @@ void ACoverGenerator::Tick( float DeltaTime )
 			if (FVector::Dist(GetActorLocation(), Cover->Location) > DebugDistance)
 				continue;
 	
-			DrawDebugCircle(GetWorld(), Cover->Location + VerticalOffset, 50, 4, FColor::Red, false, DeltaTime, SDPG_World, 0.2f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
-			DrawDebugCircle(GetWorld(), Cover->Location + VerticalOffset, 50, 4, FColor::Red, false, DeltaTime, SDPG_World, 0.2f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
-			
+			DrawDebugSphere(GetWorld(), Cover->Location + VerticalOffset, 50, 4, FColor::Red);
 		}
 	}
 
