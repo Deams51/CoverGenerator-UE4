@@ -1,10 +1,10 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "EnvQueryTest_TraceDistance.h"
+#include "EnvQuery/Tests/EnvQueryTest_TraceDistance.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
-#include "EnvQueryTest_IsCoverPosition.h"
-#include "Public/CollisionQueryParams.h"
+#include "EnvQuery/Tests/EnvQueryTest_IsCoverPosition.h"
+#include "CollisionQueryParams.h"
 #include "WorldCollision.h"
 #include "Engine/World.h"
 

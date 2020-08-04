@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "AsyncWork.h"
+#include "Async/AsyncWork.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 
 class ACoverGenerator;
