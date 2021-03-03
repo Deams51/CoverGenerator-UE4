@@ -1,10 +1,12 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "EnvQueryTest_IsCoverPosition.h"
+#include "EnvQuery/Tests/EnvQueryTest_IsCoverPosition.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
+#include "CollisionQueryParams.h"
+#include "Engine/World.h"
 
-#include "EnvQueryItemType_Cover.h"
+#include "EnvQuery/EnvQueryItemType_Cover.h"
 
 
 UEnvQueryTest_IsCoverPosition::UEnvQueryTest_IsCoverPosition(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -35,7 +37,7 @@ void UEnvQueryTest_IsCoverPosition::RunTest(FEnvQueryInstance& QueryInstance) co
 	}
 
 	FCollisionQueryParams TraceParams(TEXT("EnvQueryTrace"), TraceData.bTraceComplex);
-	TraceParams.bTraceAsyncScene = true;
+	TraceParams.bTraceComplex = true;
 
 	TArray<AActor*> IgnoredActors;
 	if (QueryInstance.PrepareContext(Context, IgnoredActors))

@@ -80,7 +80,7 @@ void ACoverGenerator::Tick( float DeltaTime )
 		{
 			if (FVector::Dist(GetActorLocation(), Cover->Location) > DebugDistance)
 				continue;
-
+	
 			DrawDebugSphere(GetWorld(), Cover->Location + VerticalOffset, 50, 4, FColor::Red);
 		}
 	}
@@ -123,6 +123,7 @@ void ACoverGenerator::Tick( float DeltaTime )
 			if (Cover->bLeftCoverStanding || Cover->bRightCoverStanding)
 			{
 				const FVector StandingLocation = Cover->Location + StandingHeight; 
+
 
 				DrawDebugSphere(GetWorld(), StandingLocation, 30, 4, FColor::Blue);
 
@@ -319,6 +320,7 @@ bool ACoverGenerator::TwoPassesCheck(UWorld* World, const FVector& SegmentPoint,
 		if (bDebugLocal && bDraw4SecondPassTracesSidesFrontAndBottom)
 		{
 			DrawDebugSphere(World, SegmentPoint, 20, 2, !HitSideFront && HitSideBottom ? FColor::Green : FColor::Red, true, 10.f);
+			
 			if (HitSideFront)
 			{
 				DrawDebugDirectionalArrow(World, SideFrontStart, SideFrontEnd, 10, FColor::Purple, true, 10.f);
@@ -578,7 +580,9 @@ void ACoverGenerator::DrawOctreeBounds()
 	FVector center = CoverPointOctree->GetRootBounds().Center;
 
 	DrawDebugBox(GetWorld(), center, maxExtent, FColor().Blue, false, 0.0f);
+	
 	DrawDebugSphere(GetWorld(), center + maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
+
 	DrawDebugSphere(GetWorld(), center - maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
 }
 
@@ -634,17 +638,9 @@ bool ACoverGenerator::CoverExistWithinBox(const FBox& BoxIn)
 
 #if WITH_EDITOR
 
-void ACoverGenerator::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+void ACoverGenerator::Generate()
 {
-	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-	if (PropertyName == GET_MEMBER_NAME_CHECKED(ACoverGenerator, ForceRefresh))
-	{
-		ForceRefresh = false; 
-		// in editor not async
 		GenerateCovers(true, false); 
-	}
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
 #endif
