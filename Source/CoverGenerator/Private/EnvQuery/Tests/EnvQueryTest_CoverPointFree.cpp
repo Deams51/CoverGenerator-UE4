@@ -1,11 +1,9 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "EnvQueryTest_CoverPointFree.h"
+#include "EnvQuery/Tests/EnvQueryTest_CoverPointFree.h"
 #include "CoverPoint.h"
-#include "EnvQueryItemType_Cover.h"
+#include "EnvQuery/EnvQueryItemType_Cover.h"
 #include "CoverGenerator.h"
-
-
 
 UEnvQueryTest_CoverPointFree::UEnvQueryTest_CoverPointFree(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

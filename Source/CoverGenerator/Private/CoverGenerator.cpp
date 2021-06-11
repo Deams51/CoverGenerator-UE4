@@ -1,7 +1,9 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
 #include "CoverGenerator.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "EnvQuery/EnvQueryItemType_Cover.h"
+#include "NavFilter_Cover.h"
 #include "EngineUtils.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "DrawDebugHelpers.h"
@@ -14,12 +16,9 @@ ACoverGenerator::ACoverGenerator(const FObjectInitializer& ObjectInitializer) : 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	// Simple root scene 
-	RootComponent = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("RootSceneComponent"));
-
 	// Octree
-	CoverPointOctree = new FCoverPointOctree(FVector(0, 0, 0), 64000);
-
+	CoverPointOctree = new TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics>(FVector(0, 0, 0), 64000);
+	FilterClass = UNavFilter_Cover::StaticClass();
 	// Async
 	bIsRefreshed = false;
 	bIsRefreshing = false;
@@ -80,8 +79,9 @@ void ACoverGenerator::Tick( float DeltaTime )
 		{
 			if (FVector::Dist(GetActorLocation(), Cover->Location) > DebugDistance)
 				continue;
-
-			DrawDebugSphere(GetWorld(), Cover->Location + VerticalOffset, 50, 4, FColor::Red);
+	
+			DrawDebugCircle(GetWorld(), Cover->Location + VerticalOffset, 50, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+			DrawDebugCircle(GetWorld(), Cover->Location + VerticalOffset, 50, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
 		}
 	}
 
@@ -106,11 +106,12 @@ void ACoverGenerator::Tick( float DeltaTime )
 			const FVector Front = Cover->DirectionToWall();
 			const FVector Top = FVector::UpVector; 
 
+
 			if (Cover->bLeftCoverCrouched || Cover->bRightCoverCrouched || Cover->bFrontCoverCrouched)
 			{
 				const FVector CrouchLocation = Cover->Location + CrouchHeight;
-
-				DrawDebugSphere(GetWorld(), CrouchLocation, 30, 4, FColor::Blue);
+				DrawDebugCircle(GetWorld(), CrouchLocation, 25, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+				DrawDebugCircle(GetWorld(), CrouchLocation, 25, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
 
 				if (Cover->bLeftCoverCrouched)
 					DrawDebugCover(GetWorld(), CrouchLocation, Left, Front, 60.f);
@@ -124,7 +125,8 @@ void ACoverGenerator::Tick( float DeltaTime )
 			{
 				const FVector StandingLocation = Cover->Location + StandingHeight; 
 
-				DrawDebugSphere(GetWorld(), StandingLocation, 30, 4, FColor::Blue);
+				DrawDebugCircle(GetWorld(), StandingLocation, 25, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+				DrawDebugCircle(GetWorld(), StandingLocation, 25, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 1.0f), FVector(0.0f, 0.0f, 1.0f), false);
 
 				if (Cover->bLeftCoverStanding)
 					DrawDebugCover(GetWorld(), StandingLocation, Left, Front, 60.f);
@@ -206,12 +208,7 @@ bool ACoverGenerator::IsProvidingCover(UWorld* World, const FVector SegmentPoint
 
 #if WITH_EDITOR
 	const bool bDebugLocal = bDraw3SimpleCoverGeometryTest && FVector::Dist(GetActorLocation(), SegmentPoint) < DebugDistance;
-	//if (bDebugLocal)
-	//{
-	//	const FName TraceTag("MyTraceTag");
-	//	World->DebugDrawTraceTag = TraceTag;
-	//	CollisionParams.TraceTag = TraceTag;
-	//}
+
 #endif
 
 	// First trace to find normal to geometry
@@ -222,7 +219,8 @@ bool ACoverGenerator::IsProvidingCover(UWorld* World, const FVector SegmentPoint
 #if WITH_EDITOR
 		if (bDebugLocal)
 		{
-			DrawDebugSphere(World, SegmentPoint + FVector(0.f, 0.f, StartHeight), 25, 4, FColor::Red, true, 10.f);
+			DrawDebugCircle(World, SegmentPoint + FVector(0.f, 0.f, StartHeight), 25, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+			DrawDebugCircle(World, SegmentPoint + FVector(0.f, 0.f, StartHeight), 25, 62, FColor::Red, false, -1.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
 			DrawDebugDirectionalArrow(World, SegmentPoint, SegmentPoint + TraceVec, 10, FColor::Red, true, 10.f);
 		}
 #endif
@@ -246,7 +244,9 @@ bool ACoverGenerator::IsProvidingCover(UWorld* World, const FVector SegmentPoint
 #if WITH_EDITOR
 				if (bDebugLocal)
 				{
-					DrawDebugSphere(World, SegmentPoint + FVector(0.f, 0.f, StartHeight + 10.f), 25, 4, FColor::Orange, true, 10.f);
+					DrawDebugCircle(World, SegmentPoint + FVector(0.f, 0.f, StartHeight + 10.f), 25, 62, FColor::Orange, false, -1.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+					DrawDebugCircle(World, SegmentPoint + FVector(0.f, 0.f, StartHeight + 10.f), 25, 62, FColor::Orange, false, -1.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+
 					DrawDebugDirectionalArrow(World, StartPos, StartPos + TraceDirection, 10, FColor::Orange, true, 10.f);
 				}
 #endif
@@ -259,7 +259,8 @@ bool ACoverGenerator::IsProvidingCover(UWorld* World, const FVector SegmentPoint
 #if WITH_EDITOR
 	if (bDebugLocal)
 	{
-		DrawDebugSphere(World, SegmentPoint + FVector(0.f, 0.f, StartHeight + 20.f), 25, 4, FColor::Green, true, 10.f);
+		DrawDebugCircle(World, SegmentPoint + FVector(0.f, 0.f, StartHeight + 20.f), 25, 62, FColor::Orange, false, -1.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+		DrawDebugCircle(World, SegmentPoint + FVector(0.f, 0.f, StartHeight + 20.f), 25, 62, FColor::Orange, false, -1.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
 	}
 #endif
 	
@@ -292,7 +293,9 @@ bool ACoverGenerator::TwoPassesCheck(UWorld* World, const FVector& SegmentPoint,
 #if WITH_EDITOR
 	if (bDebugLocal && bDraw4SecondPassTracesSides)
 	{
-		DrawDebugSphere(World, SegmentPoint, 20, 2, HitOnSide ? FColor::Red : FColor::Green, true, 10.f);
+		DrawDebugCircle(World, SegmentPoint, 20, 62, HitOnSide ? FColor::Red : FColor::Green, true, 10.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+		DrawDebugCircle(World, SegmentPoint, 20, 62, HitOnSide ? FColor::Red : FColor::Green, true, 10.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+
 		if (HitOnSide)
 		{
 			DrawDebugDirectionalArrow(World, PointOff, FirstTestEndPosition, 10, FColor::Blue, true, 10.f);
@@ -318,7 +321,9 @@ bool ACoverGenerator::TwoPassesCheck(UWorld* World, const FVector& SegmentPoint,
 #if WITH_EDITOR
 		if (bDebugLocal && bDraw4SecondPassTracesSidesFrontAndBottom)
 		{
-			DrawDebugSphere(World, SegmentPoint, 20, 2, !HitSideFront && HitSideBottom ? FColor::Green : FColor::Red, true, 10.f);
+			DrawDebugCircle(World, SegmentPoint, 20, 62, !HitSideFront && HitSideBottom ? FColor::Green : FColor::Red, true, 10.0f, SDPG_World, 0.0f, FVector(1.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+			DrawDebugCircle(World, SegmentPoint, 20, 62, !HitSideFront && HitSideBottom ? FColor::Green : FColor::Red, true, 10.0f, SDPG_World, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(0.0f, 0.0f, 1.0f), false);
+			
 			if (HitSideFront)
 			{
 				DrawDebugDirectionalArrow(World, SideFrontStart, SideFrontEnd, 10, FColor::Purple, true, 10.f);
@@ -391,12 +396,26 @@ UCoverPoint* ACoverGenerator::IsValidCoverPoint(UWorld* World, const FVector& Se
 
 void ACoverGenerator::TestAndAddPoint(const FVector SegmentPoint, FVector SegmentDirection, UWorld* World, FVector Perp)
 {
-	const bool AlreadyCoverWithinbounds = CoverExistWithinBounds(FBoxCenterAndExtent(SegmentPoint, FVector(MinSpaceBetweenValidPoints)));
+
+	FNavLocation Resul(SegmentPoint);
+
+	if (FilterClass != nullptr) {
+
+		if (UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld())){
+
+			ANavigationData* UseNavData = NavSystem->GetDefaultNavDataInstance(FNavigationSystem::DontCreate);
+
+			if (!NavSystem->GetRandomPointInNavigableRadius(SegmentPoint, 0.0f, Resul, UseNavData, UNavigationQueryFilter::GetQueryFilter(*UseNavData, GetWorld(), FilterClass)))
+				return;
+		}
+	}
+
+	const bool AlreadyCoverWithinbounds = CoverExistWithinBounds(FBoxCenterAndExtent(Resul.Location, FVector(MinSpaceBetweenValidPoints)));
 
 #if WITH_EDITOR
-	if (bDraw2SegmentPointsWithinBounds && FVector::Dist(GetActorLocation(), SegmentPoint) < DebugDistance)
+	if (bDraw2SegmentPointsWithinBounds && FVector::Dist(GetActorLocation(), Resul.Location) < DebugDistance)
 	{
-		DrawDebugSphere(GetWorld(), SegmentPoint, 20, 2, AlreadyCoverWithinbounds ? FColor::Red : FColor::Green, true, 10.f);
+		DrawDebugSphere(GetWorld(), Resul.Location, 20, 2, AlreadyCoverWithinbounds ? FColor::Red : FColor::Green, true, 10.f);
 	}
 #endif
 
@@ -410,11 +429,11 @@ void ACoverGenerator::TestAndAddPoint(const FVector SegmentPoint, FVector Segmen
 
 
 	// Check if valid point in first direction 
-	UCoverPoint* Point = IsValidCoverPoint(World, SegmentPoint, -SegmentDirection, -TraceVec, Perp);
+	UCoverPoint* Point = IsValidCoverPoint(World, Resul.Location, -SegmentDirection, -TraceVec, Perp);
 	// If not then let's try the other side
 	if (Point == NULL)
 	{
-		Point = IsValidCoverPoint(World, SegmentPoint, SegmentDirection, TraceVec, Perp);
+		Point = IsValidCoverPoint(World, Resul.Location, SegmentDirection, TraceVec, Perp);
 	}
 	
 	// If found a valid point, add to storage
@@ -450,7 +469,7 @@ void ACoverGenerator::GenerateCovers(bool ForceRegeneration, bool DoAsync)
 	// Reset Octree
 	CoverPointOctree->Destroy();
 	delete CoverPointOctree; 
-	CoverPointOctree = new FCoverPointOctree(FVector(0, 0, 0), 64000);
+	CoverPointOctree = new TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics>(FVector(0, 0, 0), 64000);
 
 	// reset
 	HasGeneratedCovers = false;
@@ -465,6 +484,7 @@ void ACoverGenerator::GenerateCovers(bool ForceRegeneration, bool DoAsync)
 
 	FRecastDebugGeometry NavMeshGeometry;
 	NavMeshGeometry.bGatherNavMeshEdges = true;
+	
 	NavMeshData->BeginBatchQuery();
 	NavMeshData->GetDebugGeometry(NavMeshGeometry);
 
@@ -493,6 +513,7 @@ void ACoverGenerator::AnalizeMeshData(FRecastDebugGeometry& NavMeshGeometry)
 	const TArray<FVector>& NavMeshEdgeVerts = NavMeshGeometry.NavMeshEdges;
 	for (int32 Idx = 0; Idx < NavMeshEdgeVerts.Num(); Idx += 2)
 	{
+
 		const FNavLocation SegmentStart = FNavLocation(NavMeshEdgeVerts[Idx]);
 		const FNavLocation SegmentEnd = FNavLocation(NavMeshEdgeVerts[Idx + 1]);
 
@@ -501,7 +522,7 @@ void ACoverGenerator::AnalizeMeshData(FRecastDebugGeometry& NavMeshGeometry)
 		FVector Perp = Get2DPerpVector(Segment);
 		FVector SegmentDirection = Segment;
 		SegmentDirection.Normalize();
-
+		
 		// Check start and end position 			
 		TestAndAddPoint(SegmentStart.Location, SegmentDirection, GetWorld(), Perp);
 		TestAndAddPoint(SegmentEnd.Location, SegmentDirection, GetWorld(), Perp);
@@ -511,6 +532,7 @@ void ACoverGenerator::AnalizeMeshData(FRecastDebugGeometry& NavMeshGeometry)
 		if (bDraw1AllSegmentPointsTested && FVector::Dist(GetActorLocation(), SegmentStart.Location) < DebugDistance)
 		{
 			bDebugDraw = true;
+
 			DrawDebugSphere(GetWorld(), SegmentStart.Location, 20, 4, FColor::Green, true, 10.f);
 			DrawDebugSphere(GetWorld(), SegmentEnd.Location, 20, 4, FColor::Red, true, 10.f);
 		}
@@ -578,7 +600,9 @@ void ACoverGenerator::DrawOctreeBounds()
 	FVector center = CoverPointOctree->GetRootBounds().Center;
 
 	DrawDebugBox(GetWorld(), center, maxExtent, FColor().Blue, false, 0.0f);
+	
 	DrawDebugSphere(GetWorld(), center + maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
+
 	DrawDebugSphere(GetWorld(), center - maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
 }
 
@@ -588,7 +612,7 @@ TArray<FCoverPointOctreeElement> ACoverGenerator::GetOctreeElementsWithinBounds(
 	int count = 0;
 	TArray<FCoverPointOctreeElement> octreeElements;
 
-	for (FCoverPointOctree::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
+	for (TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics>::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
 	OctreeIt.HasPendingElements();
 		OctreeIt.Advance())
 	{
@@ -605,7 +629,7 @@ TArray<UCoverPoint*> ACoverGenerator::GetCoverWithinBounds(const FBoxCenterAndEx
 	// Iterating over a region in the octree and storing the elements
 	TArray<UCoverPoint*> Covers;
 
-	for (FCoverPointOctree::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
+	for (TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics>::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
 	OctreeIt.HasPendingElements();
 		OctreeIt.Advance())
 	{
@@ -617,7 +641,7 @@ TArray<UCoverPoint*> ACoverGenerator::GetCoverWithinBounds(const FBoxCenterAndEx
 
 bool ACoverGenerator::CoverExistWithinBounds(const FBoxCenterAndExtent& BoundsIn)
 {
-	FCoverPointOctree::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
+	TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics>::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
 	return OctreeIt.HasPendingElements();
 }
 
@@ -634,17 +658,9 @@ bool ACoverGenerator::CoverExistWithinBox(const FBox& BoxIn)
 
 #if WITH_EDITOR
 
-void ACoverGenerator::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+void ACoverGenerator::Generate()
 {
-	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-	if (PropertyName == GET_MEMBER_NAME_CHECKED(ACoverGenerator, ForceRefresh))
-	{
-		ForceRefresh = false; 
-		// in editor not async
 		GenerateCovers(true, false); 
-	}
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
 #endif

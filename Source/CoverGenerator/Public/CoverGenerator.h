@@ -1,9 +1,10 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
 #pragma once
-
-#include "GameFramework/Actor.h"
-#include "Runtime/Engine/Public/GenericOctree.h"
+#include "CoreMinimal.h"
+#include "UObject/ObjectMacros.h"
+#include "GameFramework/Info.h"
+#include "Runtime/core/public/math/genericoctree.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
@@ -56,21 +57,21 @@ struct FCoverPointOctreeSemantics
 	}
 };
 
-typedef TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics> FCoverPointOctree;
+//typedef TOctree<FCoverPointOctreeElement *, FCoverPointOctreeSemantics> FCoverPointOctree;
 
-UCLASS()
-class COVERGENERATOR_API ACoverGenerator : public AActor
+UCLASS(showcategories=(Movement, Rendering, "AI|NavMesh"), ClassGroup=Cover)
+class COVERGENERATOR_API ACoverGenerator : public AInfo
 {
 	GENERATED_UCLASS_BODY()
 
 protected:
 
 	UPROPERTY(Category = Default, EditAnywhere)
-	bool ForceRefresh = false;
+	bool bRegenerateAtBeginPlay = true;
 
 	UPROPERTY(Category = Default, EditAnywhere)
-	bool bRegenerateAtBeginPlay = true;
-	
+		TSubclassOf<UNavigationQueryFilter> FilterClass;
+
 	/** If the cover generation should be regenerated when navigation is rebuilt at runtime */
 	UPROPERTY(Category = Default, EditAnywhere)
 	bool bRegenerateAtNavigationRebuilt = false;
@@ -166,7 +167,7 @@ protected:
 	
 private:
 	// Octree of all the generated cover points
-	FCoverPointOctree* CoverPointOctree; 
+	TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics> * CoverPointOctree;
 
 	/* Array of all cover points, used to keep GC from collecting the cp in Octree */
 	UPROPERTY(Transient)
@@ -197,7 +198,9 @@ public:
 	virtual bool ShouldTickIfViewportsOnly() const override { return true; }
 
 #if WITH_EDITOR
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+	
+	 UFUNCTION(meta = (CallInEditor = "true"))
+		void Generate();
 #endif // WITH_EDITOR
 
 	void DrawDebugCover(UWorld* World, const FVector& StartLocation, const FVector& Direction1, const FVector Direction2, const float& DistanceToDraw);

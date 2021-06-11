@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "CoverPoint.generated.h"
 
 class AController;

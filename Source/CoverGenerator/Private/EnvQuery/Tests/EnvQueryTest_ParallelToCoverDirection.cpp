@@ -1,10 +1,10 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "EnvQueryTest_ParallelToCoverDirection.h"
+#include "EnvQuery/Tests/EnvQueryTest_ParallelToCoverDirection.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
-#include "EnvQueryTest_IsCoverPosition.h"
-#include "EnvQueryItemType_Cover.h"
+#include "EnvQuery/Tests/EnvQueryTest_IsCoverPosition.h"
+#include "EnvQuery/EnvQueryItemType_Cover.h"
 
 
 UEnvQueryTest_ParallelToCoverDirection::UEnvQueryTest_ParallelToCoverDirection(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

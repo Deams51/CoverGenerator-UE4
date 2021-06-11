@@ -1,6 +1,6 @@
 // Copyright (c) 2016 Mickaël Fourgeaud
 
-#include "EnvQueryItemType_Cover.h"
+#include "EnvQuery/EnvQueryItemType_Cover.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 
