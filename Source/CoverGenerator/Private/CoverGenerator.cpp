@@ -407,15 +407,18 @@ void ACoverGenerator::TestAndAddPoint(const FVector SegmentPoint, FVector Segmen
 
 			if (!NavSystem->GetRandomPointInNavigableRadius(SegmentPoint, 0.0f, Resul, UseNavData, UNavigationQueryFilter::GetQueryFilter(*UseNavData, GetWorld(), FilterClass)))
 				return;
+
+			if (Resul.Location != SegmentPoint)
+				return;
 		}
 	}
 
-	const bool AlreadyCoverWithinbounds = CoverExistWithinBounds(FBoxCenterAndExtent(Resul.Location, FVector(MinSpaceBetweenValidPoints)));
+	const bool AlreadyCoverWithinbounds = CoverExistWithinBounds(FBoxCenterAndExtent(SegmentPoint, FVector(MinSpaceBetweenValidPoints)));
 
 #if WITH_EDITOR
-	if (bDraw2SegmentPointsWithinBounds && FVector::Dist(GetActorLocation(), Resul.Location) < DebugDistance)
+	if (bDraw2SegmentPointsWithinBounds && FVector::Dist(GetActorLocation(), SegmentPoint) < DebugDistance)
 	{
-		DrawDebugSphere(GetWorld(), Resul.Location, 20, 2, AlreadyCoverWithinbounds ? FColor::Red : FColor::Green, true, 10.f);
+		DrawDebugSphere(GetWorld(), SegmentPoint, 20, 2, AlreadyCoverWithinbounds ? FColor::Red : FColor::Green, true, 10.f);
 	}
 #endif
 
@@ -429,11 +432,11 @@ void ACoverGenerator::TestAndAddPoint(const FVector SegmentPoint, FVector Segmen
 
 
 	// Check if valid point in first direction 
-	UCoverPoint* Point = IsValidCoverPoint(World, Resul.Location, -SegmentDirection, -TraceVec, Perp);
+	UCoverPoint* Point = IsValidCoverPoint(World, SegmentPoint, -SegmentDirection, -TraceVec, Perp);
 	// If not then let's try the other side
 	if (Point == NULL)
 	{
-		Point = IsValidCoverPoint(World, Resul.Location, SegmentDirection, TraceVec, Perp);
+		Point = IsValidCoverPoint(World, SegmentPoint, SegmentDirection, TraceVec, Perp);
 	}
 	
 	// If found a valid point, add to storage
