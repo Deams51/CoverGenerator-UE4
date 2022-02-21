@@ -47,7 +47,7 @@ struct FCoverPointOctreeSemantics
 		return A.CoverPoint == B.CoverPoint;
 	}
 
-	static void SetElementId(const FCoverPointOctreeElement& Element, FOctreeElementId Id)
+	static void SetElementId(const FCoverPointOctreeElement& Element, FOctreeElementId2 Id)
 	{
 	}
 
@@ -57,9 +57,9 @@ struct FCoverPointOctreeSemantics
 	}
 };
 
-typedef TOctree<FCoverPointOctreeElement, FCoverPointOctreeSemantics> FCoverPointOctree;
+typedef TOctree2<FCoverPointOctreeElement, FCoverPointOctreeSemantics> FCoverPointOctree;
 
-UCLASS(showcategories=(Movement, Rendering, "AI|NavMesh"), ClassGroup=Cover)
+UCLASS(showcategories=(Movement, Rendering, "AI|NavMesh"), ClassGroup=Cover, Blueprintable)
 class COVERGENERATOR_API ACoverGenerator : public AInfo
 {
 	GENERATED_UCLASS_BODY()
