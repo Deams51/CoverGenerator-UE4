@@ -4,6 +4,7 @@
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_VectorBase.h"
 #include "CollisionQueryParams.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 
 #include "EnvQuery/EnvQueryItemType_Cover.h"
@@ -91,11 +92,9 @@ bool UEnvQueryTest_IsCoverPosition::RunLineTraceTo(const FVector& ItemPos, const
 {
 	FCollisionQueryParams TraceParams(Params);
 
-	if (Debug)
+	if (Debug && World)
 	{
-		const FName TraceTag("MyTraceTag");
-		World->DebugDrawTraceTag = TraceTag;
-		TraceParams.TraceTag = TraceTag;
+		DrawDebugLine(World, ContextPos, ItemPos, FColor::Yellow, false, 5.0f, 1, 3);
 	}
 
 	TraceParams.AddIgnoredActor(ItemActor);

@@ -588,17 +588,10 @@ void ACoverGenerator::DrawOctreeBounds()
 
 TArray<FCoverPointOctreeElement> ACoverGenerator::GetOctreeElementsWithinBounds(const FBoxCenterAndExtent& BoundsIn)
 {
-	// Iterating over a region in the Octree and storing the elements
-	int count = 0;
 	TArray<FCoverPointOctreeElement> octreeElements;
+	// Iterating over a region in the Octree and storing the elements
+	CoverPointOctree->FindElementsWithBoundsTest(BoundsIn, [&octreeElements](const FCoverPointOctreeElement& CoverPoint) { octreeElements.Add(CoverPoint); });
 
-	for (FCoverPointOctree::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
-	OctreeIt.HasPendingElements();
-		OctreeIt.Advance())
-	{
-		octreeElements.Add(OctreeIt.GetCurrentElement());
-		count++;
-	}
 	// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *boundingBoxQuery.Extent.ToString());
 
 	return octreeElements;
@@ -608,21 +601,18 @@ TArray<UCoverPoint*> ACoverGenerator::GetCoverWithinBounds(const FBoxCenterAndEx
 {
 	// Iterating over a region in the octree and storing the elements
 	TArray<UCoverPoint*> Covers;
+	CoverPointOctree->FindElementsWithBoundsTest(BoundsIn, [&Covers](const FCoverPointOctreeElement& CoverPoint) { Covers.Add(CoverPoint.GetOwner()); });
 
-	for (FCoverPointOctree::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
-	OctreeIt.HasPendingElements();
-		OctreeIt.Advance())
-	{
-		Covers.Add(OctreeIt.GetCurrentElement().GetOwner());
-	}
+	// UE_LOG(LogTemp, Log, TEXT("Covers within bounds are(new) %d"), (Covers.Num()) );
 
 	return Covers;
 }
 
 bool ACoverGenerator::CoverExistWithinBounds(const FBoxCenterAndExtent& BoundsIn)
 {
-	FCoverPointOctree::TConstElementBoxIterator<> OctreeIt(*CoverPointOctree, BoundsIn);
-	return OctreeIt.HasPendingElements();
+	bool Result = false;
+	CoverPointOctree->FindFirstElementWithBoundsTest(BoundsIn, [&Result](const FCoverPointOctreeElement& CoverPoint) { Result = true; return true; });
+	return Result;
 }
 
 
