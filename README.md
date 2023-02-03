@@ -1,4 +1,8 @@
-# Cover Generator 
+# Message from fork owner:
+
+I'm doing some changes for this plugin, such as minor fixes and optimizations, more EQS tests, maybe something else. 
+
+# Cover Generator
 
 The cover generator is a plugin for Unreal Engine 4. 
 

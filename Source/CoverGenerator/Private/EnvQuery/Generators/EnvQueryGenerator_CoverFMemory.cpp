@@ -12,7 +12,7 @@ UEnvQueryGenerator_CoverFMemory::UEnvQueryGenerator_CoverFMemory(const FObjectIn
 	ItemType = UEnvQueryItemType_Cover::StaticClass();
 	GenerateAround = UEnvQueryContext_Querier::StaticClass();
 	SquareExtent.DefaultValue = 750.f;
-	BoxHeight.DefaultValue = 200.f;
+	BoxHeight.DefaultValue = 400.f;
 }
 
 
@@ -39,7 +39,7 @@ void UEnvQueryGenerator_CoverFMemory::GenerateItems(FEnvQueryInstance& QueryInst
 
 	for (int32 ContextIndex = 0; ContextIndex < ContextLocations.Num(); ContextIndex++)
 	{
-		TArray<UCoverPoint*> Covers = CoverGenerator->GetCoverWithinBounds(FBoxCenterAndExtent(ContextLocations[ContextIndex], FVector(SquareE, SquareE, BoxH)));
+		TArray<UCoverPoint*> Covers = CoverGenerator->GetCoverWithinBounds(FBoxCenterAndExtent(ContextLocations[ContextIndex] - FVector(0.f, 0.f, BoxH / 2), FVector(SquareE, SquareE, BoxH)));
 		QueryInstance.AddItemData<UEnvQueryItemType_Cover>(Covers);
 	}
 }
